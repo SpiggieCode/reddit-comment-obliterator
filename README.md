@@ -17,3 +17,4 @@ The link should look like https://old.reddit.com/user/*YOUR USERNAME HERE*/comme
 The script will automatically begin deleting comments.
 Since this runs on a loop, you will need to watch until all comments are deleted and manually stop the script
 I recommend enabling the script only when you want to clear comment history
+ 
