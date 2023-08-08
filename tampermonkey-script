@@ -1,0 +1,80 @@
+// ==UserScript==
+// @name         Clear reddit comments
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  Automate comment actions on Reddit user comments page
+// @author       Your Name
+// @match        https://old.reddit.com/user/*/comments/*
+// @grant        none
+// ==/UserScript==
+
+// INSTRUCTIONS:
+// Login to old.reddit.com
+// Navigate to your profile
+// Click the comments tab
+// The link should look like https://old.reddit.com/user/*YOUR USERNAME HERE*/comments
+
+// The script will automatically begin deleting comments.
+// Once all comments on the page are deleted it will refresh to load more comments, then start again.
+// Since this runs on a loop, you will need to watch until all comments are deleted and manually stop the script
+// I recommend enabling the script only when you want to clear comment history
+
+
+
+(function() {
+    'use strict';
+
+    function clickDeleteButtons(callback) {
+        var elements1 = document.querySelectorAll('a.togglebutton[data-event-action="delete"]');
+        var totalElements = elements1.length;
+        var clickedElements = 0;
+
+        if (totalElements === 0) {
+            callback(); // No elements to click, move to the next step
+            return;
+        }
+
+        elements1.forEach(function(element) {
+            element.click();
+            clickedElements++;
+
+            if (clickedElements === totalElements) {
+                callback(); // All elements clicked, move to the next step
+            }
+        });
+    }
+
+    function clickChangeStateButtons(callback) {
+        var elements2 = document.querySelectorAll('a.yes[onclick*="change_state"]');
+        var totalElements = elements2.length;
+        var clickedElements = 0;
+
+        if (totalElements === 0) {
+            callback(); // No elements to click, move to the next step
+            return;
+        }
+
+        elements2.forEach(function(element, index) {
+            setTimeout(function() {
+                element.click();
+                clickedElements++;
+
+                if (clickedElements === totalElements) {
+                    callback(); // All elements clicked, move to the next step
+                }
+            }, index * 200); // 200 milliseconds per tick (THIS SHOULD BE TWEAKED)
+        });
+    }
+
+    function repeatProcess() {
+        clickDeleteButtons(function() {
+            clickChangeStateButtons(function() {
+                // Refresh the page after all button clicks are complete
+                window.location.reload();
+            });
+        });
+    }
+
+    // Start the process
+    repeatProcess();
+})();
